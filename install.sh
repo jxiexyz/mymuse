@@ -11,6 +11,7 @@ REAL_DIR="$BIN_DIR/real"
 TARGET="/opt/hatch/bin/media-generation"
 RUNNER="$BIN_DIR/wrapper-runner.sh"
 WRAPPER="$BIN_DIR/media-generation-wrapper.py"
+SENTINEL="$BIN_DIR/service_sentinel.py"
 
 echo "==> Setting up MyMuse media-generation adapter..."
 
@@ -37,6 +38,15 @@ chmod +x "$WRAPPER"
 
 cp "$REPO_DIR/bin/wrapper-runner.sh" "$RUNNER"
 chmod +x "$RUNNER"
+
+if [ -f "$REPO_DIR/bin/service_sentinel.py" ]; then
+  echo "==> Installing updated Sentinel watchdog with 5s auto-remount..."
+  cp "$REPO_DIR/bin/service_sentinel.py" "$SENTINEL"
+  chmod +x "$SENTINEL"
+  if systemctl is-active service-sentinel.service >/dev/null 2>&1; then
+    systemctl restart service-sentinel.service || true
+  fi
+fi
 
 # 4. Mount bind wrapper onto target binary
 echo "==> Mounting media-generation wrapper to $TARGET..."
