@@ -2,7 +2,7 @@
 set -e
 
 # ==============================================================================
-# MyMuse - Media Generation Region Bypass & Aspect Ratio Optimizer
+# MyMuse - Media Generation Pipeline Adapter & Aspect Ratio Optimizer
 # ==============================================================================
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,7 +12,7 @@ TARGET="/opt/hatch/bin/media-generation"
 RUNNER="$BIN_DIR/wrapper-runner.sh"
 WRAPPER="$BIN_DIR/media-generation-wrapper.py"
 
-echo "==> Setting up MyMuse media-generation bypass..."
+echo "==> Setting up MyMuse media-generation adapter..."
 
 mkdir -p "$BIN_DIR"
 mkdir -p "$REAL_DIR"
@@ -38,17 +38,17 @@ if mount | grep -q "$TARGET"; then
   umount "$TARGET" || true
 fi
 
-echo "==> Mounting bypass wrapper to $TARGET..."
+echo "==> Mounting media-generation wrapper to $TARGET..."
 mount --bind "$RUNNER" "$TARGET"
 
 # 4. Integrate into ensure-gateway.sh if present
 ENSURE_SCRIPT="/home/hatch/workspace/hermes-gateway/ensure-gateway.sh"
-if [ -f "$ENSURE_SCRIPT" ] && ! grep -q "ENSURE MEDIA-GENERATION BYPASS MOUNT" "$ENSURE_SCRIPT"; then
+if [ -f "$ENSURE_SCRIPT" ] && ! grep -q "ENSURE MEDIA-GENERATION WRAPPER MOUNT" "$ENSURE_SCRIPT"; then
   echo "==> Adding auto-mount hook to $ENSURE_SCRIPT..."
   cat << 'EOF' >> "$ENSURE_SCRIPT"
 
 # ==============================================================================
-# 8. ENSURE MEDIA-GENERATION BYPASS MOUNT
+# 8. ENSURE MEDIA-GENERATION WRAPPER MOUNT
 # ==============================================================================
 RUNNER=/home/hatch/workspace/bin/wrapper-runner.sh
 TARGET=/opt/hatch/bin/media-generation
@@ -73,4 +73,4 @@ fi
 
 echo "==> Verification test:"
 "$TARGET" --help | head -n 3
-echo "==> Done! Bypass successfully installed and active."
+echo "==> Done! Adapter successfully installed and active."
